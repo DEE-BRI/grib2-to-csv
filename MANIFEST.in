@@ -1,3 +1,2 @@
 include src/grib2_to_csv/bin/*
 include src/grib2_to_csv/data/*
-include src/grib2_to_csv/msm/*
