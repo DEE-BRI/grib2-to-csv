@@ -25,8 +25,11 @@ from scipy import ndimage, signal
 def get_MSM_index_lat_lon():
     """DFのインデックスとしてMSMの座標と緯度経度を読み込む
 
+    Args:
+
     Returns:
-        DataFrame: MSMの座標と緯度経度
+      DataFrame: MSMの座標と緯度経度
+
     """
     MSM_lat = np.arange(505)  # 緯度方向の格子点数505
     MSM_lon = np.arange(481)  # 経度方向の格子点数481
@@ -56,13 +59,14 @@ def get_MSM_index_lat_lon():
 
 
 def get_MSM_list(df_meshcode):
-    """[summary]
+    """
 
     Args:
-        df_meshcode ([type]): [description]
+      df_meshcode([type]): [description]
 
     Returns:
-        [type]: [description]
+      [type]: [description]
+
     """
     df_meshcode_L = len(df_meshcode)
 
@@ -121,16 +125,28 @@ def get_MSM_list(df_meshcode):
 
 
 def pd_read_pikle_map(file_list):
-    """
-    Pickleされたデータフレーム群を1つに結合する
-    :param file_list: Pickeされたデータフレームのファイル一覧
-    :return: 結合されたデータフレーム
+    """Pickleされたデータフレーム群を1つに結合する
+
+    Args:
+      file_list: Pickeされたデータフレームのファイル一覧
+
+    Returns:
+      結合されたデータフレーム
+
     """
     df = pd.concat(map(pd_read_pikle, file_list))
     return df
 
 
 def pd_read_pikle(file_path):
+    """
+
+    Args:
+      file_path: 
+
+    Returns:
+
+    """
     # Load pickled pandas object (or any object) from file.
     df = pd.read_pickle(file_path)
 
@@ -143,6 +159,17 @@ def pd_read_pikle(file_path):
 
 
 def weather_selester(dataset, weather, fc_time, band_list):
+    """
+
+    Args:
+      dataset: 
+      weather: 
+      fc_time: 
+      band_list: 
+
+    Returns:
+
+    """
     data = np.nan
     fc_time = str(int(fc_time * 3600)) + ' sec'
     for band in band_list:
@@ -162,12 +189,29 @@ def weather_selester(dataset, weather, fc_time, band_list):
 
 
 def in_series(ndata):
+    """
+
+    Args:
+      ndata: 
+
+    Returns:
+
+    """
     return pd.Series(ndata.ravel())
 
 
-# 重量絶対湿度　mixing ratio
 @jit("f8[:](f8[:],f8[:],f8[:])", nopython=True)
 def func_MR(t, RH, P):
+    """重量絶対湿度　mixing ratio
+
+    Args:
+      t: 
+      RH: 
+      P: 
+
+    Returns:
+
+    """
     T = t + 273.15
     eSAT = np.exp(-5800.2206 / T
                   + 1.3914993
@@ -181,6 +225,16 @@ def func_MR(t, RH, P):
 
 
 def func_IHO_AM(day_date, phi, lon):
+    """
+
+    Args:
+      day_date: 
+      phi: 
+      lon: 
+
+    Returns:
+
+    """
     year = datetime.date(day_date.year, 1, 1)
     t1 = day_date.date()
     TM = day_date.hour
@@ -240,6 +294,15 @@ def func_IHO_AM(day_date, phi, lon):
 
 
 def oder_select_rad(df, oder):
+    """
+
+    Args:
+      df: 
+      oder: 
+
+    Returns:
+
+    """
     return df.at[oder, 'a'], \
            df.at[oder, 'b'], \
            df.at[oder, 'c'], \
@@ -252,6 +315,27 @@ def oder_select_rad(df, oder):
 @jit(nopython=True)
 def func_TH(clu_data, clm_data, cll_data, AM, TT, RH,
             a, b, c, d, e, f, g, IHO):
+    """
+
+    Args:
+      clu_data: 
+      clm_data: 
+      cll_data: 
+      AM: 
+      TT: 
+      RH: 
+      a: 
+      b: 
+      c: 
+      d: 
+      e: 
+      f: 
+      g: 
+      IHO: 
+
+    Returns:
+
+    """
     return (a * clu_data
             + b * clm_data
             + c * cll_data
@@ -263,6 +347,23 @@ def func_TH(clu_data, clm_data, cll_data, AM, TT, RH,
 
 def func_radiation(date, lat, lon, HCDC, MCDC, LCDC, TCDC, TMP, RH,
                    df_coef_rad):
+    """
+
+    Args:
+      date: 
+      lat: 
+      lon: 
+      HCDC: 
+      MCDC: 
+      LCDC: 
+      TCDC: 
+      TMP: 
+      RH: 
+      df_coef_rad: 
+
+    Returns:
+
+    """
     # 大気外日射量とエアマスの計算
     IHO, AM = func_IHO_AM(date, lat, lon)
 
@@ -311,6 +412,15 @@ def func_radiation(date, lat, lon, HCDC, MCDC, LCDC, TCDC, TMP, RH,
 
 
 def oder_select_atm(df, oder):
+    """
+
+    Args:
+      df: 
+      oder: 
+
+    Returns:
+
+    """
     return df.at[oder, 'u'], \
            df.at[oder, 'v'], \
            df.at[oder, 'w'], \
@@ -318,11 +428,34 @@ def oder_select_atm(df, oder):
 
 
 def func_C(HMCDC, LCDC, e, u, v, w, x):
+    """
+
+    Args:
+      HMCDC: 
+      LCDC: 
+      e: 
+      u: 
+      v: 
+      w: 
+      x: 
+
+    Returns:
+
+    """
     return 1 + (u*LCDC + v*LCDC*e + w*HMCDC + x*HMCDC * e)
 
 
 @jit("f8[:](f8[:],f8[:])", nopython=True)
 def func_e(TMP, RH):
+    """
+
+    Args:
+      TMP: 
+      RH: 
+
+    Returns:
+
+    """
     TMP_abs = TMP + 273.15
     eSAT = np.exp(-5800.2206 / TMP_abs
                   + 1.3914993
@@ -335,6 +468,16 @@ def func_e(TMP, RH):
 
 @jit("f8[:](f8[:],f8[:],f8[:])", nopython=True)
 def func_Ld(TMP, e, C):
+    """
+
+    Args:
+      TMP: 
+      e: 
+      C: 
+
+    Returns:
+
+    """
     TMP_abs = TMP + 273.15
 
     # ステファンボルツマン定数
@@ -350,6 +493,21 @@ def func_Ld(TMP, e, C):
 
 def func_a_radiation(TMP, RH, LCDC5, LCDC25, HMCDC5, HMCDC25, APCP01,
                      df_coef_atm):
+    """
+
+    Args:
+      TMP: 
+      RH: 
+      LCDC5: 
+      LCDC25: 
+      HMCDC5: 
+      HMCDC25: 
+      APCP01: 
+      df_coef_atm: 
+
+    Returns:
+
+    """
 
     # 大気放射量の補間計算
     e = func_e(TMP, RH)
@@ -385,8 +543,17 @@ def func_a_radiation(TMP, RH, LCDC5, LCDC25, HMCDC5, HMCDC25, APCP01,
 
 
 @lru_cache(maxsize=1000)
-# 大気放射量計算用の形態係数等の算出
 def calc_VF(l, b, d):
+    """大気放射量計算用の形態係数等の算出
+
+    Args:
+      l: 
+      b: 
+      d: 
+
+    Returns:
+
+    """
     return 1 / (2 * pi) \
            * (l / (sqrt(d ** 2 + l ** 2))
               * atan(b / sqrt(d ** 2 + l ** 2))
@@ -396,6 +563,14 @@ def calc_VF(l, b, d):
 
 @lru_cache(maxsize=1000)
 def viewfactor(H):
+    """
+
+    Args:
+      H: 
+
+    Returns:
+
+    """
     VF = np.zeros(25)
 
     x1 = [12.5, 7.5, 2.5, 7.5, 12.5] * 5
@@ -456,21 +631,23 @@ save_name = ['TMP',
              'APCP01']
 
 
-# 補間計算ループ
 def hokanloop(df, date_end, df_coef_atm, df_coef_rad, file_list, temp_path,
               start_date, logger):
-    """
+    """補間計算ループ
 
-    :param date_2:
-    :param date_end:
-    :param df:
-    :param df_coef_atm: 回帰係数(大気放射量の推計)
-    :param df_coef_rad: 回帰係数(射量・大気放射量の計算)
-    :param file_list:
-    :param temp_path: MSMファイルの保存パス
-    :param start_date:
-    :param logger: ロガー
-    :return:
+    Args:
+      date_2: param date_end:
+      df: param df_coef_atm: 回帰係数(大気放射量の推計)
+      df_coef_rad: 回帰係数(射量・大気放射量の計算)
+      file_list: param temp_path: MSMファイルの保存パス
+      start_date: param logger: ロガー
+      date_end: 
+      df_coef_atm: 
+      temp_path: 
+      logger: 
+
+    Returns:
+
     """
 
     utc_jst = datetime.timedelta(hours=9)
@@ -531,21 +708,22 @@ def hokanloop(df, date_end, df_coef_atm, df_coef_rad, file_list, temp_path,
 
 
 def hokankeisan(dt2, dt5, df, df_coef_atm, df_coef_rad, temp_path, logging):
-    """
-
-    絶対湿度の計算、日射量と大気放射量の推計
-
+    """絶対湿度の計算、日射量と大気放射量の推計
+    
     補間計算を実施し、 `{path_save}/temp/{YYYYMMDDhh0000*.pkl}` に結果保存する。
 
-    :param dt2:
-    :param dt5:
-    :param df: 気象データ
-    :param df_coef_atm: 重回帰係数(大気放射量の推計)
-    :param df_coef_rad: 重回帰係数(射量・大気放射量の計算)
-    :param index_list:
-    :param temp_path: 一時ファイルの保存パス
-    :param logging: ロガー
-    :return:
+    Args:
+      dt2: param dt5:
+      df: 気象データ
+      df_coef_atm: 重回帰係数(大気放射量の推計)
+      df_coef_rad: 重回帰係数(射量・大気放射量の計算)
+      index_list: param temp_path: 一時ファイルの保存パス
+      logging: ロガー
+      dt5: 
+      temp_path: 
+
+    Returns:
+
     """
 
     date, _ = get_datetime_str(dt5, 2 + 9)  # JST補正（UTC+9）
@@ -570,13 +748,15 @@ def hokankeisan(dt2, dt5, df, df_coef_atm, df_coef_rad, temp_path, logging):
 
 
 def clean_df(date_5, df, logging):
-    """
-    不要なデータをdfから削除
+    """不要なデータをdfから削除
 
-    :param date_5:
-    :param df:
-    :param logging:
-    :return:
+    Args:
+      date_5: param df:
+      logging: return:
+      df: 
+
+    Returns:
+
     """
     exc_list = []
     columns = df.columns.values
@@ -593,14 +773,17 @@ def clean_df(date_5, df, logging):
 
 
 def hokan_core(date, df, df_coef_atm, df_coef_rad):
-    """
-    絶対湿度の計算、日射量と大気放射量の推計
+    """絶対湿度の計算、日射量と大気放射量の推計
 
-    :param date:
-    :param df:
-    :param df_coef_atm: 回帰係数(大気放射量の推計)
-    :param df_coef_rad: 回帰係数(射量・大気放射量の計算)
-    :return: 結果のデータフレーム
+    Args:
+      date: param df:
+      df_coef_atm: 回帰係数(大気放射量の推計)
+      df_coef_rad: 回帰係数(射量・大気放射量の計算)
+      df: 
+
+    Returns:
+      結果のデータフレーム
+
     """
     d0 = date.strftime(date_format)
 
@@ -666,13 +849,16 @@ def hokan_core(date, df, df_coef_atm, df_coef_rad):
     return df_save
 
 
-# データセットから気象要素を取り出してDFに格納
 def load_grib2_to_dataframe(dataset, date, df):
-    """
+    """データセットから気象要素を取り出してDFに格納
 
-    :param dataset: GRIB2データセット
-    :param date: GRIB2データセットの年月日日時
-    :param df: 格納先のデータフレーム
+    Args:
+      dataset: GRIB2データセット
+      date: GRIB2データセットの年月日日時
+      df: 格納先のデータフレーム
+
+    Returns:
+
     """
 
     # GRIB2データのバンド番号のリスト ex) [0, 1, 2, ... , 9]
@@ -751,16 +937,28 @@ def load_grib2_to_dataframe(dataset, date, df):
 
 
 def get_datetime_str(dt, timedifference):
+    """
+
+    Args:
+      dt: 
+      timedifference: 
+
+    Returns:
+
+    """
     # JST補正（UTC+9）
     date = dt + datetime.timedelta(hours=timedifference)
     return date, date.strftime(date_format)
 
 
 def init(args):
-    """
-    初期化処理
+    """初期化処理
 
-    :param args: コマンドライン引数
+    Args:
+      args: コマンドライン引数
+
+    Returns:
+
     """
     # GDALで気温を摂氏で読み込む
     gdal.SetConfigOption('GRIB_NORMALIZE_UNITS', 'YES')
@@ -841,6 +1039,7 @@ def init(args):
 
 
 def main():
+    """ """
     import argparse
 
     # コマンドライン引数の処理
@@ -896,12 +1095,15 @@ def main():
 
 
 def split_files(MSM_list, temp_path, logger):
-    """
-    ファイルの分割
+    """ファイルの分割
 
-    :param MSM_list: MSMのリスト
-    :param logger: ロガー
-    :param temp_path: 分割ファイルがあるディレクトリ
+    Args:
+      MSM_list: MSMのリスト
+      logger: ロガー
+      temp_path: 分割ファイルがあるディレクトリ
+
+    Returns:
+
     """
 
     # 読み込むファイルサイズの関係で10日分（時間）ごとに分割
@@ -948,13 +1150,16 @@ def split_files(MSM_list, temp_path, logger):
 
 
 def combine_files(MSM_list, temp_path, path_save, logger):
-    """
-    ファイルの結合
+    """ファイルの結合
 
-    :param MSM_list:　MSMのリスト
-    :param temp_path: 分割ファイルがあるディレクトリ
-    :param path_save: 結合結果を保存するディレクトリ
-    :param logger: ロガー
+    Args:
+      MSM_list: MSMのリスト
+      temp_path: 分割ファイルがあるディレクトリ
+      path_save: 結合結果を保存するディレクトリ
+      logger: ロガー
+
+    Returns:
+
     """
     logger.info("分割したファイルを結合しています")
 
