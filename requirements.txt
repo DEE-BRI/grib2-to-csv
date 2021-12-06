@@ -1,4 +1,5 @@
-osgeo
+GDAL
 pandas
 numba
 scipy
+python-dateutil
