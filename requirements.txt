@@ -1,0 +1,4 @@
+osgeo
+pandas
+numba
+scipy
